@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+// movies adapter to the recycler view.
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHolder> {
 
     private List<Movie> moviesList;
