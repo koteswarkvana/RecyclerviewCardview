@@ -1,11 +1,17 @@
 package com.koti.apple.recyclerviewcardview;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +21,9 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private List<Movie> movieList = new ArrayList<>();
+
+    public static final int PERMISSION_REQUEST_STORAGE_CODE = 1;
+    public static String[] PERMISSIONS_STORAGE = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +44,9 @@ public class MainActivity extends AppCompatActivity {
         // added adapter to the recycler view.
         mRecyclerView.setAdapter(mAdapter);
 
-        prepareMovieData();
+        if (checkStoragePermission()) {
+            prepareMovieData();
+        }
     }
 
     // add items constructor to the list
@@ -75,4 +86,22 @@ public class MainActivity extends AppCompatActivity {
         mAdapter.notifyDataSetChanged();
     }
 
+    public boolean checkStoragePermission() {
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+            return true;
+
+        ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS_STORAGE, PERMISSION_REQUEST_STORAGE_CODE);
+        return false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            // Do your require task
+            Toast.makeText(this, "Do what you need .. !", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "You need to give permission to access .. !", Toast.LENGTH_SHORT).show();
+        }
+    }
 }
